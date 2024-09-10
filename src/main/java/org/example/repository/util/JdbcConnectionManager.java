@@ -13,20 +13,22 @@ public class JdbcConnectionManager {
     private static final String DB_FILE = "database/currency_exchange.db";
 
     public Connection getConnection() throws SQLException {
-
         URL resource;
-        String path = null;
+        String path;
+
         try {
             Class.forName(DRIVER);
             resource = getClass().getClassLoader().getResource(DB_FILE);
-            if (resource != null) {
-                path = new File(resource.toURI()).getAbsolutePath();
+            if (resource == null) {
+                throw new RuntimeException("Database file not found: " + DB_FILE);
             }
-        } catch (ClassNotFoundException | URISyntaxException e) {
-            throw new RuntimeException(e);
+            path = new File(resource.toURI()).getAbsolutePath();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Failed to load JDBC driver: " + DRIVER, e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Invalid URI for the database file: " + DB_FILE, e);
         }
 
         return DriverManager.getConnection(String.format("jdbc:sqlite:%s", path));
     }
-
 }
