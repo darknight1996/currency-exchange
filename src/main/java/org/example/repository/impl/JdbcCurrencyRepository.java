@@ -17,11 +17,11 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
     @Override
     public List<Currency> getAll() throws RepositoryException {
         List<Currency> currencies = new ArrayList<>();
+        final String query = "SELECT * FROM Currency";
 
-        try (final Connection connection = jdbcConnectionManager.getConnection()) {
-            final String query = "SELECT * FROM Currency";
-            final PreparedStatement preparedStatement = connection.prepareStatement(query);
-            final ResultSet resultSet = preparedStatement.executeQuery();
+        try (Connection connection = jdbcConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
                 final int id = resultSet.getInt("ID");
@@ -30,21 +30,40 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
                 final String sign = resultSet.getString("Sign");
 
                 final Currency currency = new Currency(id, code, fullName, sign);
-
                 currencies.add(currency);
             }
 
-            resultSet.close();
-            preparedStatement.close();
         } catch (SQLException e) {
-            throw new RepositoryException(e.getMessage());
+            throw new RepositoryException("Error fetching all currencies");
         }
 
         return currencies;
     }
 
     @Override
-    public Optional<Currency> getById(final int id) {
+    public Optional<Currency> getById(final int id) throws RepositoryException {
+        final String query = "SELECT * FROM Currency WHERE id = ?";
+
+        try (Connection connection = jdbcConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, id);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    final String code = resultSet.getString("Code");
+                    final String fullName = resultSet.getString("FullName");
+                    final String sign = resultSet.getString("Sign");
+
+                    final Currency currency = new Currency(id, code, fullName, sign);
+                    return Optional.of(currency);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RepositoryException("Error fetching currency by ID: " + id);
+        }
+
         return Optional.empty();
     }
 
