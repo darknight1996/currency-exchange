@@ -1,9 +1,12 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Currency {
 
     private int id;
     private String code;
+    @JsonProperty("name")
     private String fullName;
     private String sign;
 
