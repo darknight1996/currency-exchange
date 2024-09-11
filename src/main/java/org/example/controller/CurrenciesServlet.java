@@ -12,6 +12,7 @@ import org.example.service.impl.CurrencyServiceImpl;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @WebServlet("/currencies")
 public class CurrenciesServlet extends HttpServlet {
@@ -28,6 +29,47 @@ public class CurrenciesServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             objectMapper.writeValue(resp.getWriter(), e.getMessage());
         }
+    }
+
+    @Override
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+        final String code = req.getParameter("code");
+        final String name = req.getParameter("name");
+        final String sign = req.getParameter("sign");
+
+        if (code == null || code.trim().isEmpty()) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            objectMapper.writeValue(resp.getWriter(), "Missing parameter - code");
+            return;
+        }
+        if (name == null || name.trim().isEmpty()) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            objectMapper.writeValue(resp.getWriter(), "Missing parameter - name");
+            return;
+        }
+        if (sign == null || sign.trim().isEmpty()) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            objectMapper.writeValue(resp.getWriter(), "Missing parameter - sign");
+            return;
+        }
+
+        try {
+            if (currencyService.getByCode(code).isPresent()) {
+                resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                objectMapper.writeValue(resp.getWriter(), "Currency with this code already exists");
+                return;
+            }
+
+            final Currency currency = new Currency(code, name, sign);
+            final Optional<Currency> currencyOptional = currencyService.add(currency);
+            if (currencyOptional.isPresent()) {
+                objectMapper.writeValue(resp.getWriter(), currencyOptional.get());
+            }
+        } catch (ServiceException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            objectMapper.writeValue(resp.getWriter(), e.getMessage());
+        }
+
     }
 
 }

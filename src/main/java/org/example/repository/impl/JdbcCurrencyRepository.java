@@ -97,8 +97,32 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
     }
 
     @Override
-    public int add(final Currency currency) {
-        return 0;
+    public Optional<Currency> add(final Currency currency) throws RepositoryException {
+        Optional<Currency> currencyOptional = Optional.empty();
+        final String query = "INSERT INTO Currency(Code, FullName, Sign) VALUES(?, ?, ?)";
+
+        try (Connection connection = jdbcConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, currency.getCode());
+            preparedStatement.setString(2, currency.getFullName());
+            preparedStatement.setString(3, currency.getSign());
+
+            preparedStatement.executeUpdate();
+
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    final int id = resultSet.getInt(1);
+
+                    currency.setId(id);
+                    currencyOptional = Optional.of(currency);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Error saving currency");
+        }
+
+        return currencyOptional;
     }
 
     @Override

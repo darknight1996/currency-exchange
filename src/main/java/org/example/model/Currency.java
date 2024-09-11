@@ -20,6 +20,12 @@ public class Currency {
         this.sign = sign;
     }
 
+    public Currency(final String code, final String fullName, final String sign) {
+        this.code = code;
+        this.fullName = fullName;
+        this.sign = sign;
+    }
+
     public int getId() {
         return id;
     }
