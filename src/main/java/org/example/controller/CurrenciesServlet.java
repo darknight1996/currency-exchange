@@ -1,8 +1,6 @@
 package org.example.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.controller.responce.ErrorResponse;
@@ -12,14 +10,14 @@ import org.example.service.CurrencyService;
 import org.example.service.impl.CurrencyServiceImpl;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Optional;
 
 @WebServlet("/currencies")
-public class CurrenciesServlet extends HttpServlet {
+public class CurrenciesServlet extends AbstractServlet {
 
     private final CurrencyService currencyService = new CurrencyServiceImpl();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
@@ -54,21 +52,20 @@ public class CurrenciesServlet extends HttpServlet {
             return;
         }
 
-        try {
+        try (PrintWriter writer = resp.getWriter()) {
             if (currencyService.getByCode(code).isPresent()) {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                objectMapper.writeValue(resp.getWriter(), new ErrorResponse("Currency with this code already exists"));
+                objectMapper.writeValue(writer, new ErrorResponse("Currency with this code already exists"));
                 return;
             }
 
             final Currency currency = new Currency(code, name, sign);
             final Optional<Currency> currencyOptional = currencyService.add(currency);
             if (currencyOptional.isPresent()) {
-                objectMapper.writeValue(resp.getWriter(), currencyOptional.get());
+                objectMapper.writeValue(writer, currencyOptional.get());
             }
         } catch (ServiceException e) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(e.getMessage()));
+            handleInternalServerError(resp, e);
         }
 
     }

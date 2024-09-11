@@ -38,7 +38,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
                 currencies.add(currency);
             }
         } catch (SQLException e) {
-            throw new RepositoryException("Error fetching all currencies");
+            throw new RepositoryException("Error fetching all currencies: " + e.getMessage());
         }
 
         return currencies;
@@ -46,7 +46,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
 
     @Override
     public Optional<Currency> getById(final int id) throws RepositoryException {
-        final String query = "SELECT * FROM Currency WHERE id = ?";
+        final String query = "SELECT * FROM Currency WHERE ID = ?";
 
         try (Connection connection = jdbcConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -64,7 +64,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RepositoryException("Error fetching currency by ID: " + id);
+            throw new RepositoryException("Error fetching currency by ID: " + id + ". " + e.getMessage());
         }
 
         return Optional.empty();
@@ -90,7 +90,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RepositoryException("Error fetching currency by Code: " + code);
+            throw new RepositoryException("Error fetching currency by Code: " + code + ". " + e.getMessage());
         }
 
         return Optional.empty();
@@ -102,7 +102,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
         final String query = "INSERT INTO Currency(Code, FullName, Sign) VALUES(?, ?, ?)";
 
         try (Connection connection = jdbcConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, currency.getCode());
             preparedStatement.setString(2, currency.getFullName());
@@ -119,7 +119,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RepositoryException("Error saving currency");
+            throw new RepositoryException("Error saving currency: " + e.getMessage());
         }
 
         return currencyOptional;
