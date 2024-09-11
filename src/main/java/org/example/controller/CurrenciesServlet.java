@@ -36,19 +36,16 @@ public class CurrenciesServlet extends AbstractServlet {
         final String name = req.getParameter("name");
         final String sign = req.getParameter("sign");
 
-        if (code == null || code.trim().isEmpty()) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getWriter(), new ErrorResponse("Missing parameter - code"));
+        if (isNullOrEmpty(code)) {
+            handleBadRequest(resp, "Missing parameter - code");
             return;
         }
-        if (name == null || name.trim().isEmpty()) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getWriter(), new ErrorResponse("Missing parameter - name"));
+        if (isNullOrEmpty(name)) {
+            handleBadRequest(resp, "Missing parameter - name");
             return;
         }
-        if (sign == null || sign.trim().isEmpty()) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getWriter(), new ErrorResponse("Missing parameter - sign"));
+        if (isNullOrEmpty(sign)) {
+            handleBadRequest(resp, "Missing parameter - sign");
             return;
         }
 
@@ -67,7 +64,10 @@ public class CurrenciesServlet extends AbstractServlet {
         } catch (ServiceException e) {
             handleInternalServerError(resp, e);
         }
+    }
 
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
     }
 
 }

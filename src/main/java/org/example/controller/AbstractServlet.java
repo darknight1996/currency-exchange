@@ -19,4 +19,11 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
 
+    protected void handleBadRequest(HttpServletResponse resp, String message) throws IOException {
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        try (PrintWriter writer = resp.getWriter()) {
+            objectMapper.writeValue(writer, new ErrorResponse(message));
+        }
+    }
+
 }
