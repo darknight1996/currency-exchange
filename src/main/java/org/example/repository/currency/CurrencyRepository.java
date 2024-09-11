@@ -1,7 +1,7 @@
-package org.example.repository;
+package org.example.repository.currency;
 
 import org.example.exception.RepositoryException;
-import org.example.model.Currency;
+import org.example.model.currency.Currency;
 
 import java.util.List;
 import java.util.Optional;

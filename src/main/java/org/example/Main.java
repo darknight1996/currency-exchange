@@ -1,9 +1,9 @@
 package org.example;
 
 import org.example.exception.RepositoryException;
-import org.example.model.Currency;
-import org.example.repository.CurrencyRepository;
-import org.example.repository.impl.JdbcCurrencyRepository;
+import org.example.model.currency.Currency;
+import org.example.repository.currency.CurrencyRepository;
+import org.example.repository.currency.impl.JdbcCurrencyRepository;
 
 public class Main {
 

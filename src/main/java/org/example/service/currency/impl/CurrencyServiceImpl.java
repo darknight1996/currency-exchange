@@ -1,11 +1,11 @@
-package org.example.service.impl;
+package org.example.service.currency.impl;
 
 import org.example.exception.RepositoryException;
 import org.example.exception.ServiceException;
-import org.example.model.Currency;
-import org.example.repository.CurrencyRepository;
-import org.example.repository.impl.JdbcCurrencyRepository;
-import org.example.service.CurrencyService;
+import org.example.model.currency.Currency;
+import org.example.repository.currency.CurrencyRepository;
+import org.example.repository.currency.impl.JdbcCurrencyRepository;
+import org.example.service.currency.CurrencyService;
 
 import java.util.List;
 import java.util.Optional;

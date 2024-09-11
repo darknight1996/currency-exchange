@@ -1,13 +1,14 @@
-package org.example.controller;
+package org.example.controller.currency;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.controller.AbstractServlet;
 import org.example.controller.responce.ErrorResponse;
 import org.example.exception.ServiceException;
-import org.example.model.Currency;
-import org.example.service.CurrencyService;
-import org.example.service.impl.CurrencyServiceImpl;
+import org.example.model.currency.Currency;
+import org.example.service.currency.CurrencyService;
+import org.example.service.currency.impl.CurrencyServiceImpl;
 
 import java.io.IOException;
 import java.io.PrintWriter;

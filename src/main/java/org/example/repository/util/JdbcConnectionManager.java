@@ -13,12 +13,11 @@ public class JdbcConnectionManager {
     private static final String DB_FILE = "database/currency_exchange.db";
 
     public Connection getConnection() throws SQLException {
-        URL resource;
         String path;
 
         try {
             Class.forName(DRIVER);
-            resource = getClass().getClassLoader().getResource(DB_FILE);
+            final URL resource = getClass().getClassLoader().getResource(DB_FILE);
             if (resource == null) {
                 throw new RuntimeException("Database file not found: " + DB_FILE);
             }

@@ -1,7 +1,7 @@
-package org.example.service;
+package org.example.service.currency;
 
 import org.example.exception.ServiceException;
-import org.example.model.Currency;
+import org.example.model.currency.Currency;
 
 import java.util.List;
 import java.util.Optional;
