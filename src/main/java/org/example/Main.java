@@ -8,6 +8,6 @@ public class Main {
 
     public static void main(String[] args) throws RepositoryException {
         final CurrencyRepository currencyRepository = new JdbcCurrencyRepository();
-        System.out.println(currencyRepository.getAll().size());
+        System.out.println(currencyRepository.getById(1).get().getFullName());
     }
 }

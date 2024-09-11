@@ -25,7 +25,9 @@ public class CurrenciesServlet extends HttpServlet {
             final List<Currency> currencies = currencyService.getAll();
             objectMapper.writeValue(resp.getWriter(), currencies);
         } catch (IOException | ServiceException e) {
-            objectMapper.writeValue(resp.getWriter(), e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            objectMapper.writeValue(resp.getWriter(), e.getMessage());
         }
     }
+
 }
