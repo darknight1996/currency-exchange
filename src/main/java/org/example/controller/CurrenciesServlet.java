@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.controller.responce.ErrorResponse;
 import org.example.exception.ServiceException;
 import org.example.model.Currency;
 import org.example.service.CurrencyService;
@@ -27,7 +28,7 @@ public class CurrenciesServlet extends HttpServlet {
             objectMapper.writeValue(resp.getWriter(), currencies);
         } catch (IOException | ServiceException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            objectMapper.writeValue(resp.getWriter(), e.getMessage());
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(e.getMessage()));
         }
     }
 
@@ -39,24 +40,24 @@ public class CurrenciesServlet extends HttpServlet {
 
         if (code == null || code.trim().isEmpty()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getWriter(), "Missing parameter - code");
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse("Missing parameter - code"));
             return;
         }
         if (name == null || name.trim().isEmpty()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getWriter(), "Missing parameter - name");
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse("Missing parameter - name"));
             return;
         }
         if (sign == null || sign.trim().isEmpty()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getWriter(), "Missing parameter - sign");
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse("Missing parameter - sign"));
             return;
         }
 
         try {
             if (currencyService.getByCode(code).isPresent()) {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                objectMapper.writeValue(resp.getWriter(), "Currency with this code already exists");
+                objectMapper.writeValue(resp.getWriter(), new ErrorResponse("Currency with this code already exists"));
                 return;
             }
 
@@ -67,7 +68,7 @@ public class CurrenciesServlet extends HttpServlet {
             }
         } catch (ServiceException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getWriter(), e.getMessage());
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(e.getMessage()));
         }
 
     }
