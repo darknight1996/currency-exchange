@@ -24,8 +24,7 @@ public class CurrencyServlet extends AbstractServlet {
         try (final PrintWriter writer = resp.getWriter()) {
             final String code = req.getPathInfo().replaceFirst("/", "");
             if (code.trim().isEmpty()) {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                objectMapper.writeValue(writer, new ErrorResponse("Code is empty"));
+                handleBadRequest(resp, "Code is empty");
                 return;
             }
 
@@ -33,8 +32,7 @@ public class CurrencyServlet extends AbstractServlet {
             if (currencyOptional.isPresent()) {
                 objectMapper.writeValue(writer, currencyOptional.get());
             } else {
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                objectMapper.writeValue(writer, new ErrorResponse("Currency with code: " + code + " not found"));
+                handleNotFound(resp, "Currency with code: " + code + " not found");
             }
         } catch (ServiceException e) {
             handleInternalServerError(resp, e);

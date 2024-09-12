@@ -19,6 +19,13 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
 
+    protected void handleNotFound(final HttpServletResponse resp, final String message) throws IOException {
+        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        try (final PrintWriter writer = resp.getWriter()) {
+            objectMapper.writeValue(writer, new ErrorResponse(message));
+        }
+    }
+
     protected void handleBadRequest(final HttpServletResponse resp, final String message) throws IOException {
         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         try (final PrintWriter writer = resp.getWriter()) {

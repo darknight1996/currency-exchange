@@ -49,7 +49,7 @@ public class JdbcExchangeRateRepository implements ExchangeRateRepository {
                 exchangeRates.add(exchangeRate);
             }
         } catch (SQLException e) {
-            throw new RepositoryException("Error fetching all currencies: " + e.getMessage());
+            throw new RepositoryException("Error fetching all exchange rates: " + e.getMessage());
         }
 
         return exchangeRates;
@@ -76,4 +76,5 @@ public class JdbcExchangeRateRepository implements ExchangeRateRepository {
 
         return new ExchangeRate(id, baseCurrency, targetCurrency, rate);
     }
+
 }
