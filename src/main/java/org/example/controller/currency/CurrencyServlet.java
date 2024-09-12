@@ -21,7 +21,7 @@ public class CurrencyServlet extends AbstractServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        try (PrintWriter writer = resp.getWriter()) {
+        try (final PrintWriter writer = resp.getWriter()) {
             final String code = req.getPathInfo().replaceFirst("/", "");
             if (code.trim().isEmpty()) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

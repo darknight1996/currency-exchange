@@ -9,11 +9,12 @@ import java.io.IOException;
 public class ContentTypeFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) {
+    public void init(final FilterConfig filterConfig) {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
+                         final FilterChain filterChain) throws IOException, ServletException {
         servletResponse.setContentType("application/json");
 
         filterChain.doFilter(servletRequest, servletResponse);

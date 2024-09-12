@@ -12,11 +12,6 @@ import java.sql.*;
 
 public class JdbcCurrencyRepository implements CurrencyRepository {
 
-    private static final String ID_COLUMN = "ID";
-    private static final String CODE_COLUMN = "Code";
-    private static final String FULL_NAME_COLUMN = "FullName";
-    private static final String SIGN_COLUMN = "Sign";
-
     private final JdbcConnectionManager jdbcConnectionManager = new JdbcConnectionManager();
 
     @Override
@@ -29,12 +24,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
-                final int id = resultSet.getInt(ID_COLUMN);
-                final String code = resultSet.getString(CODE_COLUMN);
-                final String fullName = resultSet.getString(FULL_NAME_COLUMN);
-                final String sign = resultSet.getString(SIGN_COLUMN);
-
-                final Currency currency = new Currency(id, code, fullName, sign);
+                final Currency currency = getCurrency(resultSet);
                 currencies.add(currency);
             }
         } catch (SQLException e) {
@@ -55,11 +45,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    final String code = resultSet.getString(CODE_COLUMN);
-                    final String fullName = resultSet.getString(FULL_NAME_COLUMN);
-                    final String sign = resultSet.getString(SIGN_COLUMN);
-
-                    final Currency currency = new Currency(id, code, fullName, sign);
+                    final Currency currency = getCurrency(resultSet);
                     return Optional.of(currency);
                 }
             }
@@ -81,11 +67,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    final int id = resultSet.getInt(ID_COLUMN);
-                    final String fullName = resultSet.getString(FULL_NAME_COLUMN);
-                    final String sign = resultSet.getString(SIGN_COLUMN);
-
-                    final Currency currency = new Currency(id, code, fullName, sign);
+                    final Currency currency = getCurrency(resultSet);
                     return Optional.of(currency);
                 }
             }
@@ -123,6 +105,15 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
         }
 
         return currencyOptional;
+    }
+
+    private Currency getCurrency(final ResultSet resultSet) throws SQLException {
+        final int id = resultSet.getInt("ID");
+        final String code = resultSet.getString("Code");
+        final String fullName = resultSet.getString("FullName");
+        final String sign = resultSet.getString("Sign");
+
+        return new Currency(id, code, fullName, sign);
     }
 
     @Override

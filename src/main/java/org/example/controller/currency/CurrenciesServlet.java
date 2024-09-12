@@ -22,12 +22,11 @@ public class CurrenciesServlet extends AbstractServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        try {
+        try (final PrintWriter writer = resp.getWriter()) {
             final List<Currency> currencies = currencyService.getAll();
-            objectMapper.writeValue(resp.getWriter(), currencies);
+            objectMapper.writeValue(writer, currencies);
         } catch (IOException | ServiceException e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(e.getMessage()));
+            handleInternalServerError(resp, e);
         }
     }
 
@@ -50,7 +49,7 @@ public class CurrenciesServlet extends AbstractServlet {
             return;
         }
 
-        try (PrintWriter writer = resp.getWriter()) {
+        try (final PrintWriter writer = resp.getWriter()) {
             if (currencyService.getByCode(code).isPresent()) {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
                 objectMapper.writeValue(writer, new ErrorResponse("Currency with this code already exists"));
@@ -67,7 +66,7 @@ public class CurrenciesServlet extends AbstractServlet {
         }
     }
 
-    private boolean isNullOrEmpty(String str) {
+    private boolean isNullOrEmpty(final String str) {
         return str == null || str.trim().isEmpty();
     }
 

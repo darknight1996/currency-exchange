@@ -12,16 +12,16 @@ public abstract class AbstractServlet extends HttpServlet {
 
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
-    protected void handleInternalServerError(HttpServletResponse resp, Exception e) throws IOException {
+    protected void handleInternalServerError(final HttpServletResponse resp, final Exception e) throws IOException {
         resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        try (PrintWriter writer = resp.getWriter()) {
+        try (final PrintWriter writer = resp.getWriter()) {
             objectMapper.writeValue(writer, new ErrorResponse(e.getMessage()));
         }
     }
 
-    protected void handleBadRequest(HttpServletResponse resp, String message) throws IOException {
+    protected void handleBadRequest(final HttpServletResponse resp, final String message) throws IOException {
         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        try (PrintWriter writer = resp.getWriter()) {
+        try (final PrintWriter writer = resp.getWriter()) {
             objectMapper.writeValue(writer, new ErrorResponse(message));
         }
     }
