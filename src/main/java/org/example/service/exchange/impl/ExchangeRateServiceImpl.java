@@ -8,6 +8,7 @@ import org.example.repository.exchange.impl.JdbcExchangeRateRepository;
 import org.example.service.exchange.ExchangeRateService;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ExchangeRateServiceImpl implements ExchangeRateService {
 
@@ -17,6 +18,24 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
     public List<ExchangeRate> getAll() throws ServiceException {
         try {
             return exchangeRateRepository.getAll();
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<ExchangeRate> getByCodes(final String baseCurrencyCode, final String targetCurrencyCode) throws ServiceException {
+        try {
+            return exchangeRateRepository.getByCodes(baseCurrencyCode, targetCurrencyCode);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<ExchangeRate> add(final ExchangeRate exchangeRate) throws ServiceException {
+        try {
+            return exchangeRateRepository.add(exchangeRate);
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());
         }

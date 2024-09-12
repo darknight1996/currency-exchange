@@ -4,7 +4,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.controller.AbstractServlet;
-import org.example.controller.responce.ErrorResponse;
 import org.example.exception.ServiceException;
 import org.example.model.currency.Currency;
 import org.example.service.currency.CurrencyService;
@@ -36,28 +35,19 @@ public class CurrenciesServlet extends AbstractServlet {
         final String name = req.getParameter("name");
         final String sign = req.getParameter("sign");
 
-        if (isNullOrEmpty(code)) {
-            handleBadRequest(resp, "Missing parameter - code");
-            return;
-        }
-        if (isNullOrEmpty(name)) {
-            handleBadRequest(resp, "Missing parameter - name");
-            return;
-        }
-        if (isNullOrEmpty(sign)) {
-            handleBadRequest(resp, "Missing parameter - sign");
+        if (isInvalidParameters(code, name, sign, resp)) {
             return;
         }
 
         try (final PrintWriter writer = resp.getWriter()) {
             if (currencyService.getByCode(code).isPresent()) {
-                resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                objectMapper.writeValue(writer, new ErrorResponse("Currency with this code already exists"));
+                handleConflict(resp, "Currency with this code already exists");
                 return;
             }
 
             final Currency currency = new Currency(code, name, sign);
             final Optional<Currency> currencyOptional = currencyService.add(currency);
+
             if (currencyOptional.isPresent()) {
                 objectMapper.writeValue(writer, currencyOptional.get());
             }
@@ -66,8 +56,24 @@ public class CurrenciesServlet extends AbstractServlet {
         }
     }
 
-    private boolean isNullOrEmpty(final String str) {
-        return str == null || str.trim().isEmpty();
+    private boolean isInvalidParameters(final String code, final String name, final String sign,
+                                        final HttpServletResponse resp) throws IOException {
+        if (isNullOrEmpty(code)) {
+            handleBadRequest(resp, "Missing parameter - code");
+            return true;
+        }
+
+        if (isNullOrEmpty(name)) {
+            handleBadRequest(resp, "Missing parameter - name");
+            return true;
+        }
+
+        if (isNullOrEmpty(sign)) {
+            handleBadRequest(resp, "Missing parameter - sign");
+            return true;
+        }
+
+        return false;
     }
 
 }

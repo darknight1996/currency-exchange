@@ -33,4 +33,15 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
 
+    protected void handleConflict(final HttpServletResponse resp, final String message) throws IOException {
+        resp.setStatus(HttpServletResponse.SC_CONFLICT);
+        try (final PrintWriter writer = resp.getWriter()) {
+            objectMapper.writeValue(writer, new ErrorResponse(message));
+        }
+    }
+
+    protected boolean isNullOrEmpty(final String str) {
+        return str == null || str.trim().isEmpty();
+    }
+
 }

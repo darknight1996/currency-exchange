@@ -19,9 +19,9 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
         List<Currency> currencies = new ArrayList<>();
         final String query = "SELECT * FROM Currency";
 
-        try (Connection connection = jdbcConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (final Connection connection = jdbcConnectionManager.getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(query);
+             final ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
                 final Currency currency = getCurrency(resultSet);
@@ -38,12 +38,12 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
     public Optional<Currency> getById(final int id) throws RepositoryException {
         final String query = "SELECT * FROM Currency WHERE ID = ?";
 
-        try (Connection connection = jdbcConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (final Connection connection = jdbcConnectionManager.getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setInt(1, id);
 
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            try (final ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     final Currency currency = getCurrency(resultSet);
                     return Optional.of(currency);
@@ -60,12 +60,12 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
     public Optional<Currency> getByCode(final String code) throws RepositoryException {
         final String query = "SELECT * FROM Currency WHERE Code = ?";
 
-        try (Connection connection = jdbcConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (final Connection connection = jdbcConnectionManager.getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, code);
 
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            try (final ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     final Currency currency = getCurrency(resultSet);
                     return Optional.of(currency);
@@ -83,8 +83,8 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
         Optional<Currency> currencyOptional = Optional.empty();
         final String query = "INSERT INTO Currency(Code, FullName, Sign) VALUES(?, ?, ?)";
 
-        try (Connection connection = jdbcConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (final Connection connection = jdbcConnectionManager.getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, currency.getCode());
             preparedStatement.setString(2, currency.getFullName());
@@ -92,7 +92,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
 
             preparedStatement.executeUpdate();
 
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+            try (final ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
                     final int id = resultSet.getInt(1);
 

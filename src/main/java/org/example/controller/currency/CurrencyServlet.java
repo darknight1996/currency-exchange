@@ -29,6 +29,7 @@ public class CurrencyServlet extends AbstractServlet {
             }
 
             final Optional<Currency> currencyOptional = currencyService.getByCode(code);
+
             if (currencyOptional.isPresent()) {
                 objectMapper.writeValue(writer, currencyOptional.get());
             } else {
