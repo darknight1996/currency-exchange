@@ -17,48 +17,47 @@ import java.util.Optional;
 public class ExchangeRatesServlet extends AbstractExchangeServlet {
 
     @Override
-    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        try (final PrintWriter writer = resp.getWriter()) {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        try (final PrintWriter writer = response.getWriter()) {
             final List<ExchangeRate> exchangeRates = exchangeRateService.getAll();
             objectMapper.writeValue(writer, exchangeRates);
         } catch (ServiceException e) {
-            handleInternalServerError(resp, e);
+            handleInternalServerError(response, e);
         }
     }
 
     @Override
-    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws  IOException {
-        final String baseCurrencyCode = req.getParameter("baseCurrencyCode");
-        final String targetCurrencyCode = req.getParameter("targetCurrencyCode");
-        final String rateParam = req.getParameter("rate");
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws  IOException {
+        final String baseCurrencyCode = request.getParameter("baseCurrencyCode");
+        final String targetCurrencyCode = request.getParameter("targetCurrencyCode");
+        final String rateParam = request.getParameter("rate");
 
-        if (isInvalidParameters(baseCurrencyCode, targetCurrencyCode, rateParam, resp)) {
+        if (isInvalidParameters(baseCurrencyCode, targetCurrencyCode, rateParam, response)) {
             return;
         }
 
-        final BigDecimal rate = parseRate(rateParam, resp);
+        final BigDecimal rate = parseBigDecimal(rateParam, response, "Invalid rate");
         if (rate == null) {
-            handleBadRequest(resp, "Invalid rate");
             return;
         }
 
-        processAddExchangeRate(baseCurrencyCode, targetCurrencyCode, rate, resp);
+        processAddExchangeRate(baseCurrencyCode, targetCurrencyCode, rate, response);
     }
 
     private boolean isInvalidParameters(final String baseCurrencyCode, final String targetCurrencyCode,
-                                       final String rateParam, final HttpServletResponse resp) throws IOException {
+                                       final String rateParam, final HttpServletResponse response) throws IOException {
         if (isNullOrEmpty(baseCurrencyCode)) {
-            handleBadRequest(resp, "Missing parameter - baseCurrencyCode");
+            handleBadRequest(response, "Missing parameter - baseCurrencyCode");
             return true;
         }
 
         if (isNullOrEmpty(targetCurrencyCode)) {
-            handleBadRequest(resp, "Missing parameter - targetCurrencyCode");
+            handleBadRequest(response, "Missing parameter - targetCurrencyCode");
             return true;
         }
 
         if (isNullOrEmpty(rateParam)) {
-            handleBadRequest(resp, "Missing parameter - rate");
+            handleBadRequest(response, "Missing parameter - rate");
             return true;
         }
 
@@ -66,13 +65,13 @@ public class ExchangeRatesServlet extends AbstractExchangeServlet {
     }
 
     private void processAddExchangeRate(final String baseCurrencyCode, final String targetCurrencyCode,
-                                     final BigDecimal rate, final HttpServletResponse resp) throws IOException {
-        try (final PrintWriter writer = resp.getWriter()) {
+                                     final BigDecimal rate, final HttpServletResponse response) throws IOException {
+        try (final PrintWriter writer = response.getWriter()) {
             final Optional<ExchangeRate> exchangeRateOptional =
                     exchangeRateService.getByCodes(baseCurrencyCode, targetCurrencyCode);
 
             if (exchangeRateOptional.isPresent()) {
-                handleConflict(resp, "Exchange rate with this currencies already exists");
+                handleConflict(response, "Exchange rate with this currencies already exists");
                 return;
             }
 
@@ -80,7 +79,7 @@ public class ExchangeRatesServlet extends AbstractExchangeServlet {
             final Optional<Currency> targetCurrencyOptional = currencyService.getByCode(targetCurrencyCode);
 
             if (baseCurrencyOptional.isEmpty() || targetCurrencyOptional.isEmpty()) {
-                handleNotFound(resp, "One or both currencies not found");
+                handleNotFound(response, "One or both currencies not found");
                 return;
             }
 
@@ -96,7 +95,7 @@ public class ExchangeRatesServlet extends AbstractExchangeServlet {
                 objectMapper.writeValue(writer, exchangeRateNewOptional.get());
             }
         } catch (ServiceException e) {
-            handleInternalServerError(resp, e);
+            handleInternalServerError(response, e);
         }
     }
 

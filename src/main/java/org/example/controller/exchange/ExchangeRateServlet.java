@@ -26,76 +26,75 @@ public class ExchangeRateServlet extends AbstractExchangeServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        final String codePair = getPathParam(req);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        final String codePair = getPathParam(request);
 
-        if (isCodePairInvalid(codePair, resp)) {
+        if (isCodePairInvalid(codePair, response)) {
             return;
         }
 
         final String baseCurrencyCode = codePair.substring(0, 3);
         final String targetCurrencyCode = codePair.substring(3);
 
-        try (final PrintWriter writer = resp.getWriter()) {
+        try (final PrintWriter writer = response.getWriter()) {
             final Optional<ExchangeRate> exchangeRateOptional =
                     exchangeRateService.getByCodes(baseCurrencyCode, targetCurrencyCode);
 
             if (exchangeRateOptional.isPresent()) {
                 objectMapper.writeValue(writer, exchangeRateOptional.get());
             } else {
-                handleNotFound(resp, "Exchange rate for provided codes: "
+                handleNotFound(response, "Exchange rate for provided currencies: "
                         + baseCurrencyCode + ", " + targetCurrencyCode + " not found");
             }
         } catch (ServiceException e) {
-            handleInternalServerError(resp, e);
+            handleInternalServerError(response, e);
         }
     }
 
     @Override
-    protected void doPatch(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        final String codePair = getPathParam(req);
+    protected void doPatch(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        final String codePair = getPathParam(request);
 
-        final String parameter = req.getReader().readLine();
+        final String parameter = request.getReader().readLine();
         if (parameter == null || !parameter.contains("rate")) {
-            handleBadRequest(resp, "Missing parameter - rate");
+            handleBadRequest(response, "Missing parameter - rate");
             return;
         }
 
         final String rateParam = parameter.replace("rate=", "");
 
-        if (isInvalidParameters(codePair, rateParam, resp)) {
+        if (isInvalidParameters(codePair, rateParam, response)) {
             return;
         }
 
-        final BigDecimal rate = parseRate(rateParam, resp);
+        final BigDecimal rate = parseBigDecimal(rateParam, response, "Invalid rate");
         if (rate == null) {
-            handleBadRequest(resp, "Invalid rate");
             return;
         }
 
         final String baseCurrencyCode = codePair.substring(0, 3);
         final String targetCurrencyCode = codePair.substring(3);
 
-        processUpdateExchangeRate(baseCurrencyCode, targetCurrencyCode, rate, resp);
+        processUpdateExchangeRate(baseCurrencyCode, targetCurrencyCode, rate, response);
     }
 
     private boolean isInvalidParameters(final String codePair, final String rateParam,
-                                        final HttpServletResponse resp) throws IOException {
-        if (isCodePairInvalid(codePair, resp)) {
+                                        final HttpServletResponse response) throws IOException {
+        if (isCodePairInvalid(codePair, response)) {
             return true;
         }
 
         if (isNullOrEmpty(rateParam)) {
-            handleBadRequest(resp, "Missing parameter - rate");
+            handleBadRequest(response, "Missing parameter - rate");
             return true;
         }
 
         return false;
     }
 
-    private boolean isCodePairInvalid(final String codePair, final HttpServletResponse resp) throws IOException {
+    private boolean isCodePairInvalid(final String codePair, final HttpServletResponse response) throws IOException {
         if (codePair.trim().length() != 6) {
-            handleBadRequest(resp, "Codes pair are invalid");
+            handleBadRequest(response, "Codes pair are invalid");
             return true;
         }
 
@@ -103,8 +102,8 @@ public class ExchangeRateServlet extends AbstractExchangeServlet {
     }
 
     private void processUpdateExchangeRate(final String baseCurrencyCode, final String targetCurrencyCode,
-                                     final BigDecimal rate, final HttpServletResponse resp) throws IOException {
-        try (final PrintWriter writer = resp.getWriter()) {
+                                     final BigDecimal rate, final HttpServletResponse response) throws IOException {
+        try (final PrintWriter writer = response.getWriter()) {
             final Optional<ExchangeRate> exchangeRateOptional =
                     exchangeRateService.getByCodes(baseCurrencyCode, targetCurrencyCode);
 
@@ -113,7 +112,7 @@ public class ExchangeRateServlet extends AbstractExchangeServlet {
                 final Optional<Currency> targetCurrencyOptional = currencyService.getByCode(targetCurrencyCode);
 
                 if (baseCurrencyOptional.isEmpty() || targetCurrencyOptional.isEmpty()) {
-                    handleNotFound(resp, "One or both currencies not found");
+                    handleNotFound(response, "One or both currencies not found");
                     return;
                 }
 
@@ -128,11 +127,11 @@ public class ExchangeRateServlet extends AbstractExchangeServlet {
 
                 objectMapper.writeValue(writer, exchangeRate);
             } else {
-                handleNotFound(resp, "Exchange rate for provided codes: "
+                handleNotFound(response, "Exchange rate for provided currencies: "
                         + baseCurrencyCode + ", " + targetCurrencyCode + " not found");
             }
         } catch (ServiceException e) {
-            handleInternalServerError(resp, e);
+            handleInternalServerError(response, e);
         }
     }
 

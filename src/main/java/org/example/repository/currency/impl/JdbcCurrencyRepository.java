@@ -80,7 +80,6 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
 
     @Override
     public Optional<Currency> add(final Currency currency) throws RepositoryException {
-        Optional<Currency> currencyOptional = Optional.empty();
         final String query = "INSERT INTO Currency(Code, FullName, Sign) VALUES(?, ?, ?)";
 
         try (final Connection connection = jdbcConnectionManager.getConnection();
@@ -97,14 +96,14 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
                     final int id = resultSet.getInt(1);
 
                     currency.setId(id);
-                    currencyOptional = Optional.of(currency);
+                    return Optional.of(currency);
                 }
             }
         } catch (SQLException e) {
             throw new RepositoryException("Error saving currency: " + e.getMessage());
         }
 
-        return currencyOptional;
+        return Optional.empty();
     }
 
     private Currency getCurrency(final ResultSet resultSet) throws SQLException {

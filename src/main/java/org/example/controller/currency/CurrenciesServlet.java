@@ -16,28 +16,28 @@ import java.util.Optional;
 public class CurrenciesServlet extends AbstractServlet {
 
     @Override
-    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        try (final PrintWriter writer = resp.getWriter()) {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        try (final PrintWriter writer = response.getWriter()) {
             final List<Currency> currencies = currencyService.getAll();
             objectMapper.writeValue(writer, currencies);
         } catch (IOException | ServiceException e) {
-            handleInternalServerError(resp, e);
+            handleInternalServerError(response, e);
         }
     }
 
     @Override
-    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        final String code = req.getParameter("code");
-        final String name = req.getParameter("name");
-        final String sign = req.getParameter("sign");
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        final String code = request.getParameter("code");
+        final String name = request.getParameter("name");
+        final String sign = request.getParameter("sign");
 
-        if (isInvalidParameters(code, name, sign, resp)) {
+        if (isInvalidParameters(code, name, sign, response)) {
             return;
         }
 
-        try (final PrintWriter writer = resp.getWriter()) {
+        try (final PrintWriter writer = response.getWriter()) {
             if (currencyService.getByCode(code).isPresent()) {
-                handleConflict(resp, "Currency with this code already exists");
+                handleConflict(response, "Currency with this code already exists");
                 return;
             }
 
@@ -48,24 +48,24 @@ public class CurrenciesServlet extends AbstractServlet {
                 objectMapper.writeValue(writer, currencyOptional.get());
             }
         } catch (ServiceException e) {
-            handleInternalServerError(resp, e);
+            handleInternalServerError(response, e);
         }
     }
 
     private boolean isInvalidParameters(final String code, final String name, final String sign,
-                                        final HttpServletResponse resp) throws IOException {
+                                        final HttpServletResponse response) throws IOException {
         if (isNullOrEmpty(code)) {
-            handleBadRequest(resp, "Missing parameter - code");
+            handleBadRequest(response, "Missing parameter - code");
             return true;
         }
 
         if (isNullOrEmpty(name)) {
-            handleBadRequest(resp, "Missing parameter - name");
+            handleBadRequest(response, "Missing parameter - name");
             return true;
         }
 
         if (isNullOrEmpty(sign)) {
-            handleBadRequest(resp, "Missing parameter - sign");
+            handleBadRequest(response, "Missing parameter - sign");
             return true;
         }
 

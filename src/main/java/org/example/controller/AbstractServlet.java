@@ -16,40 +16,40 @@ public abstract class AbstractServlet extends HttpServlet {
     protected final CurrencyService currencyService = new CurrencyServiceImpl();
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
-    protected void handleInternalServerError(final HttpServletResponse resp, final Exception e) throws IOException {
-        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        try (final PrintWriter writer = resp.getWriter()) {
+    protected void handleInternalServerError(final HttpServletResponse response, final Exception e) throws IOException {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        try (final PrintWriter writer = response.getWriter()) {
             objectMapper.writeValue(writer, new ErrorResponse(e.getMessage()));
         }
     }
 
-    protected void handleNotFound(final HttpServletResponse resp, final String message) throws IOException {
-        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        try (final PrintWriter writer = resp.getWriter()) {
+    protected void handleNotFound(final HttpServletResponse response, final String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        try (final PrintWriter writer = response.getWriter()) {
             objectMapper.writeValue(writer, new ErrorResponse(message));
         }
     }
 
-    protected void handleBadRequest(final HttpServletResponse resp, final String message) throws IOException {
-        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        try (final PrintWriter writer = resp.getWriter()) {
+    protected void handleBadRequest(final HttpServletResponse response, final String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        try (final PrintWriter writer = response.getWriter()) {
             objectMapper.writeValue(writer, new ErrorResponse(message));
         }
     }
 
-    protected void handleConflict(final HttpServletResponse resp, final String message) throws IOException {
-        resp.setStatus(HttpServletResponse.SC_CONFLICT);
-        try (final PrintWriter writer = resp.getWriter()) {
+    protected void handleConflict(final HttpServletResponse response, final String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_CONFLICT);
+        try (final PrintWriter writer = response.getWriter()) {
             objectMapper.writeValue(writer, new ErrorResponse(message));
         }
     }
 
-    protected String getPathParam(final HttpServletRequest req) {
-        return req.getPathInfo().replaceFirst("/", "");
+    protected String getPathParam(final HttpServletRequest request) {
+        return request.getPathInfo().replaceFirst("/", "");
     }
 
-    protected boolean isNullOrEmpty(final String str) {
-        return str == null || str.trim().isEmpty();
+    protected boolean isNullOrEmpty(final String string) {
+        return string == null || string.trim().isEmpty();
     }
 
 }

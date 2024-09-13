@@ -18,7 +18,7 @@ public class JdbcExchangeRateRepository implements ExchangeRateRepository {
 
     @Override
     public List<ExchangeRate> getAll() throws RepositoryException {
-        List<ExchangeRate> exchangeRates = new ArrayList<>();
+        final List<ExchangeRate> exchangeRates = new ArrayList<>();
 
         // @formatter:off
         final String query = """
@@ -56,8 +56,6 @@ public class JdbcExchangeRateRepository implements ExchangeRateRepository {
 
     @Override
     public Optional<ExchangeRate> getByCodes(final String baseCurrencyCode, final String targetCurrencyCode) throws RepositoryException {
-        Optional<ExchangeRate> exchangeRateOptional = Optional.empty();
-
         // @formatter:off
         final String query = """
                 SELECT
@@ -88,19 +86,18 @@ public class JdbcExchangeRateRepository implements ExchangeRateRepository {
 
                 if (resultSet.next()) {
                     final ExchangeRate exchangeRate = getExchangeRate(resultSet);
-                    exchangeRateOptional = Optional.of(exchangeRate);
+                    return Optional.of(exchangeRate);
                 }
             }
         } catch (SQLException e) {
             throw new RepositoryException("Error fetching exchange rate: " + e.getMessage());
         }
 
-        return exchangeRateOptional;
+        return Optional.empty();
     }
 
     @Override
     public Optional<ExchangeRate> add(final ExchangeRate exchangeRate) throws RepositoryException {
-        Optional<ExchangeRate> exchangeRateOptional = Optional.empty();
         final String query = "INSERT INTO ExchangeRate(BaseCurrencyId, TargetCurrencyId, Rate) VALUES(?, ?, ?)";
 
         try (final Connection connection = jdbcConnectionManager.getConnection();
@@ -117,19 +114,18 @@ public class JdbcExchangeRateRepository implements ExchangeRateRepository {
                     final int id = resultSet.getInt(1);
 
                     exchangeRate.setId(id);
-                    exchangeRateOptional = Optional.of(exchangeRate);
+                    return Optional.of(exchangeRate);
                 }
             }
         } catch (SQLException e) {
             throw new RepositoryException("Error saving exchange rate: " + e.getMessage());
         }
 
-        return exchangeRateOptional;
+        return Optional.empty();
     }
 
     @Override
     public void update(final ExchangeRate exchangeRate) throws RepositoryException {
-        Optional<ExchangeRate> exchangeRateOptional = Optional.empty();
         final String query = "UPDATE ExchangeRate SET(BaseCurrencyId, TargetCurrencyId, Rate) = (?, ?, ?) WHERE ID = ?";
 
         try (final Connection connection = jdbcConnectionManager.getConnection();

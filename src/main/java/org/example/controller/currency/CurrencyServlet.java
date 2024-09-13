@@ -15,11 +15,11 @@ import java.util.Optional;
 public class CurrencyServlet extends AbstractServlet {
 
     @Override
-    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        try (final PrintWriter writer = resp.getWriter()) {
-            final String code = getPathParam(req);
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        try (final PrintWriter writer = response.getWriter()) {
+            final String code = getPathParam(request);
             if (code.trim().isEmpty()) {
-                handleBadRequest(resp, "Code is empty");
+                handleBadRequest(response, "Code is empty");
                 return;
             }
 
@@ -28,10 +28,10 @@ public class CurrencyServlet extends AbstractServlet {
             if (currencyOptional.isPresent()) {
                 objectMapper.writeValue(writer, currencyOptional.get());
             } else {
-                handleNotFound(resp, "Currency with code: " + code + " not found");
+                handleNotFound(response, "Currency with code: " + code + " not found");
             }
         } catch (ServiceException e) {
-            handleInternalServerError(resp, e);
+            handleInternalServerError(response, e);
         }
     }
 

@@ -12,11 +12,12 @@ public abstract class AbstractExchangeServlet extends AbstractServlet {
 
     protected final ExchangeRateService exchangeRateService = new ExchangeRateServiceImpl();
 
-    protected BigDecimal parseRate(String rateParam, HttpServletResponse resp) throws IOException {
+    protected BigDecimal parseBigDecimal(final String rateParam, final HttpServletResponse response,
+                                         final String message) throws IOException {
         try {
             return BigDecimal.valueOf(Double.parseDouble(rateParam));
         } catch (NumberFormatException e) {
-            handleBadRequest(resp, "Rate is invalid");
+            handleBadRequest(response, message);
             return null;
         }
     }
