@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.controller.AbstractServlet;
 import org.example.exception.ServiceException;
 import org.example.model.currency.Currency;
-import org.example.service.currency.CurrencyService;
-import org.example.service.currency.impl.CurrencyServiceImpl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,8 +14,6 @@ import java.util.Optional;
 
 @WebServlet("/currencies")
 public class CurrenciesServlet extends AbstractServlet {
-
-    private final CurrencyService currencyService = new CurrencyServiceImpl();
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {

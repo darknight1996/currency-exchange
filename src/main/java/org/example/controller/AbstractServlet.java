@@ -2,14 +2,18 @@ package org.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.controller.responce.ErrorResponse;
+import org.example.service.currency.CurrencyService;
+import org.example.service.currency.impl.CurrencyServiceImpl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
 public abstract class AbstractServlet extends HttpServlet {
 
+    protected final CurrencyService currencyService = new CurrencyServiceImpl();
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
     protected void handleInternalServerError(final HttpServletResponse resp, final Exception e) throws IOException {
@@ -38,6 +42,10 @@ public abstract class AbstractServlet extends HttpServlet {
         try (final PrintWriter writer = resp.getWriter()) {
             objectMapper.writeValue(writer, new ErrorResponse(message));
         }
+    }
+
+    protected String getPathParam(final HttpServletRequest req) {
+        return req.getPathInfo().replaceFirst("/", "");
     }
 
     protected boolean isNullOrEmpty(final String str) {

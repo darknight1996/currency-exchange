@@ -11,5 +11,6 @@ public interface ExchangeRateRepository {
     List<ExchangeRate> getAll() throws RepositoryException;
     Optional<ExchangeRate> getByCodes(final String baseCurrencyCode, final String targetCurrencyCode) throws RepositoryException;
     Optional<ExchangeRate> add(ExchangeRate exchangeRate) throws RepositoryException;
+    void update(ExchangeRate exchangeRate) throws RepositoryException;
 
 }

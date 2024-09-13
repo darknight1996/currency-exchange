@@ -5,10 +5,10 @@ import org.example.model.currency.Currency;
 import org.example.repository.currency.CurrencyRepository;
 import org.example.repository.util.JdbcConnectionManager;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.sql.*;
 
 public class JdbcCurrencyRepository implements CurrencyRepository {
 

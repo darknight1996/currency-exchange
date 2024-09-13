@@ -127,6 +127,25 @@ public class JdbcExchangeRateRepository implements ExchangeRateRepository {
         return exchangeRateOptional;
     }
 
+    @Override
+    public void update(final ExchangeRate exchangeRate) throws RepositoryException {
+        Optional<ExchangeRate> exchangeRateOptional = Optional.empty();
+        final String query = "UPDATE ExchangeRate SET(BaseCurrencyId, TargetCurrencyId, Rate) = (?, ?, ?) WHERE ID = ?";
+
+        try (final Connection connection = jdbcConnectionManager.getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, exchangeRate.getBaseCurrency().getId());
+            preparedStatement.setInt(2, exchangeRate.getTargetCurrency().getId());
+            preparedStatement.setBigDecimal(3, exchangeRate.getRate());
+            preparedStatement.setInt(4, exchangeRate.getId());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RepositoryException("Error updating exchange rate: " + e.getMessage());
+        }
+    }
+
     private ExchangeRate getExchangeRate(final ResultSet resultSet) throws SQLException {
         final int id = resultSet.getInt("ID");
 

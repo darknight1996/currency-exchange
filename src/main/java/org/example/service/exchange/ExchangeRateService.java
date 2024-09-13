@@ -11,5 +11,6 @@ public interface ExchangeRateService {
     List<ExchangeRate> getAll() throws ServiceException;
     Optional<ExchangeRate> getByCodes(final String baseCurrencyCode, final String targetCurrencyCode) throws ServiceException;
     Optional<ExchangeRate> add(final ExchangeRate exchangeRate) throws ServiceException;
+    void update(final ExchangeRate exchangeRate) throws ServiceException;
 
 }

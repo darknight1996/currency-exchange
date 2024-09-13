@@ -1,17 +1,11 @@
 package org.example.controller.exchange;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.controller.AbstractServlet;
 import org.example.exception.ServiceException;
 import org.example.model.currency.Currency;
 import org.example.model.exchange.ExchangeRate;
-import org.example.service.currency.CurrencyService;
-import org.example.service.currency.impl.CurrencyServiceImpl;
-import org.example.service.exchange.ExchangeRateService;
-import org.example.service.exchange.impl.ExchangeRateServiceImpl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,10 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @WebServlet("/exchangeRates")
-public class ExchangeRatesServlet extends AbstractServlet {
-
-    private final ExchangeRateService exchangeRateService = new ExchangeRateServiceImpl();
-    private final CurrencyService currencyService = new CurrencyServiceImpl();
+public class ExchangeRatesServlet extends AbstractExchangeServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
@@ -36,7 +27,7 @@ public class ExchangeRatesServlet extends AbstractServlet {
     }
 
     @Override
-    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws  IOException {
         final String baseCurrencyCode = req.getParameter("baseCurrencyCode");
         final String targetCurrencyCode = req.getParameter("targetCurrencyCode");
         final String rateParam = req.getParameter("rate");
@@ -47,10 +38,11 @@ public class ExchangeRatesServlet extends AbstractServlet {
 
         final BigDecimal rate = parseRate(rateParam, resp);
         if (rate == null) {
+            handleBadRequest(resp, "Invalid rate");
             return;
         }
 
-        processExchangeRate(baseCurrencyCode, targetCurrencyCode, rate, resp);
+        processAddExchangeRate(baseCurrencyCode, targetCurrencyCode, rate, resp);
     }
 
     private boolean isInvalidParameters(final String baseCurrencyCode, final String targetCurrencyCode,
@@ -73,19 +65,11 @@ public class ExchangeRatesServlet extends AbstractServlet {
         return false;
     }
 
-    private BigDecimal parseRate(String rateParam, HttpServletResponse resp) throws IOException {
-        try {
-            return BigDecimal.valueOf(Double.parseDouble(rateParam));
-        } catch (NumberFormatException e) {
-            handleBadRequest(resp, "Rate is invalid");
-            return null;
-        }
-    }
-
-    private void processExchangeRate(final String baseCurrencyCode, final String targetCurrencyCode,
+    private void processAddExchangeRate(final String baseCurrencyCode, final String targetCurrencyCode,
                                      final BigDecimal rate, final HttpServletResponse resp) throws IOException {
         try (final PrintWriter writer = resp.getWriter()) {
-            final Optional<ExchangeRate> exchangeRateOptional = exchangeRateService.getByCodes(baseCurrencyCode, targetCurrencyCode);
+            final Optional<ExchangeRate> exchangeRateOptional =
+                    exchangeRateService.getByCodes(baseCurrencyCode, targetCurrencyCode);
 
             if (exchangeRateOptional.isPresent()) {
                 handleConflict(resp, "Exchange rate with this currencies already exists");

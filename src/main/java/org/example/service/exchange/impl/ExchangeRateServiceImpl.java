@@ -41,4 +41,13 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
         }
     }
 
+    @Override
+    public void update(final ExchangeRate exchangeRate) throws ServiceException {
+        try {
+            exchangeRateRepository.update(exchangeRate);
+        } catch (RepositoryException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
 }
