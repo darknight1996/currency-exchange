@@ -21,7 +21,7 @@ public class CurrenciesServlet extends AbstractServlet {
             final List<Currency> currencies = currencyService.getAll();
             objectMapper.writeValue(writer, currencies);
         } catch (IOException | ServiceException e) {
-            handleInternalServerError(response, e);
+            handleInternalServerError(response, e.getMessage());
         }
     }
 
@@ -48,7 +48,7 @@ public class CurrenciesServlet extends AbstractServlet {
                 objectMapper.writeValue(writer, currencyOptional.get());
             }
         } catch (ServiceException e) {
-            handleInternalServerError(response, e);
+            handleInternalServerError(response, e.getMessage());
         }
     }
 

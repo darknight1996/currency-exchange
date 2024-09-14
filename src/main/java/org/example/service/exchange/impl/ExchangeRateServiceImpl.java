@@ -104,7 +104,6 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 
                 return Optional.of(exchangeRate);
             }
-
             return Optional.empty();
         } catch (RepositoryException e) {
             throw new ServiceException(e.getMessage());

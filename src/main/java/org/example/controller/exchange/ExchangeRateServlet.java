@@ -47,7 +47,7 @@ public class ExchangeRateServlet extends AbstractExchangeServlet {
                         + baseCurrencyCode + ", " + targetCurrencyCode + " not found");
             }
         } catch (ServiceException e) {
-            handleInternalServerError(response, e);
+            handleInternalServerError(response, e.getMessage());
         }
     }
 
@@ -131,7 +131,7 @@ public class ExchangeRateServlet extends AbstractExchangeServlet {
                         + baseCurrencyCode + ", " + targetCurrencyCode + " not found");
             }
         } catch (ServiceException e) {
-            handleInternalServerError(response, e);
+            handleInternalServerError(response, e.getMessage());
         }
     }
 

@@ -16,29 +16,25 @@ public abstract class AbstractServlet extends HttpServlet {
     protected final CurrencyService currencyService = new CurrencyServiceImpl();
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
-    protected void handleInternalServerError(final HttpServletResponse response, final Exception e) throws IOException {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        try (final PrintWriter writer = response.getWriter()) {
-            objectMapper.writeValue(writer, new ErrorResponse(e.getMessage()));
-        }
+    protected void handleInternalServerError(final HttpServletResponse response, final String message) throws IOException {
+        handleError(response, message, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     protected void handleNotFound(final HttpServletResponse response, final String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        try (final PrintWriter writer = response.getWriter()) {
-            objectMapper.writeValue(writer, new ErrorResponse(message));
-        }
+        handleError(response, message, HttpServletResponse.SC_NOT_FOUND);
     }
 
     protected void handleBadRequest(final HttpServletResponse response, final String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        try (final PrintWriter writer = response.getWriter()) {
-            objectMapper.writeValue(writer, new ErrorResponse(message));
-        }
+        handleError(response, message, HttpServletResponse.SC_BAD_REQUEST);
     }
 
     protected void handleConflict(final HttpServletResponse response, final String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_CONFLICT);
+        handleError(response, message, HttpServletResponse.SC_CONFLICT);
+    }
+
+    private void handleError(final HttpServletResponse response, final String message,
+                             final int status) throws IOException {
+        response.setStatus(status);
         try (final PrintWriter writer = response.getWriter()) {
             objectMapper.writeValue(writer, new ErrorResponse(message));
         }

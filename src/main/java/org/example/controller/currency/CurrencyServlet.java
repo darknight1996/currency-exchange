@@ -31,7 +31,7 @@ public class CurrencyServlet extends AbstractServlet {
                 handleNotFound(response, "Currency with code: " + code + " not found");
             }
         } catch (ServiceException e) {
-            handleInternalServerError(response, e);
+            handleInternalServerError(response, e.getMessage());
         }
     }
 

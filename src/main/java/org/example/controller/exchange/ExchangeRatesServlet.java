@@ -22,7 +22,7 @@ public class ExchangeRatesServlet extends AbstractExchangeServlet {
             final List<ExchangeRate> exchangeRates = exchangeRateService.getAll();
             objectMapper.writeValue(writer, exchangeRates);
         } catch (ServiceException e) {
-            handleInternalServerError(response, e);
+            handleInternalServerError(response, e.getMessage());
         }
     }
 
@@ -95,7 +95,7 @@ public class ExchangeRatesServlet extends AbstractExchangeServlet {
                 objectMapper.writeValue(writer, exchangeRateNewOptional.get());
             }
         } catch (ServiceException e) {
-            handleInternalServerError(response, e);
+            handleInternalServerError(response, e.getMessage());
         }
     }
 
