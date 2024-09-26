@@ -18,7 +18,7 @@ public class CurrencyServlet extends AbstractServlet {
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         try (final PrintWriter writer = response.getWriter()) {
             final String code = getPathParam(request);
-            if (code.trim().isEmpty()) {
+            if (isNullOrEmpty(code)) {
                 handleBadRequest(response, "Code is empty");
                 return;
             }
