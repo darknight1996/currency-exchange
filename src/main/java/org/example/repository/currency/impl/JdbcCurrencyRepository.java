@@ -35,28 +35,6 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
     }
 
     @Override
-    public Optional<Currency> getById(final int id) throws RepositoryException {
-        final String query = "SELECT * FROM Currency WHERE ID = ?";
-
-        try (final Connection connection = jdbcConnectionManager.getConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            preparedStatement.setInt(1, id);
-
-            try (final ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    final Currency currency = getCurrency(resultSet);
-                    return Optional.of(currency);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RepositoryException("Error fetching currency by ID: " + id + ". " + e.getMessage());
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
     public Optional<Currency> getByCode(final String code) throws RepositoryException {
         final String query = "SELECT * FROM Currency WHERE Code = ?";
 
@@ -113,16 +91,6 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
         final String sign = resultSet.getString("Sign");
 
         return new Currency(id, code, fullName, sign);
-    }
-
-    @Override
-    public void delete(final Long id) {
-
-    }
-
-    @Override
-    public void update(final Currency currency) {
-
     }
 
 }
